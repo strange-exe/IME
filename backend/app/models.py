@@ -89,6 +89,14 @@ class CargoTCRecord(BaseModel):
         default="", 
         description="The name of the commodity/cargo (e.g., GRAIN, STEELS)."
     )
+    cargo_type: str = Field(
+        default="", 
+        description="The category of the cargo (e.g., BULK, GENERAL)."
+    )
+    charter_type: str = Field(
+        default="", 
+        description="The type of the time charter (e.g., TCT, PERIOD)."
+    )
     delivery_port: str = Field(
         default="", 
         description="The port/area where the vessel is delivered to the charterer."
@@ -105,9 +113,13 @@ class CargoTCRecord(BaseModel):
         default="", 
         description="The layday/canceling window (normalized format)."
     )
-    cargo_type: str = Field(
+    vessel_size: str = Field(
         default="", 
-        description="The category of the cargo (e.g., BULK, GENERAL)."
+        description="The deadweight tonnage (DWT) size of the vessel as a numeric string."
+    )
+    vessel_type: str = Field(
+        default="", 
+        description="The structural type or class of the vessel (e.g., SUPRAMAX)."
     )
 
 

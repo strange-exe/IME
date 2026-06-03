@@ -27,10 +27,13 @@ CREATE TABLE IF NOT EXISTS tc_records (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     account_name TEXT,
     cargo_name TEXT NOT NULL,
+    cargo_type TEXT,
+    charter_type TEXT,
     delivery_port TEXT,
     redelivery_port TEXT,
     duration TEXT,
     laycan TEXT,
-    cargo_type TEXT,
+    vessel_size TEXT,
+    vessel_type TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

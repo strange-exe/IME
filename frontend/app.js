@@ -161,6 +161,7 @@ GRAIN CAP ABT 110330 CBM
     laycan: "Laycan",
     duration: "Duration",
     cargo_type: "Cargo Type",
+    charter_type: "Charter Type",
   };
 
   /**

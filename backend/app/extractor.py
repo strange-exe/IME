@@ -37,8 +37,8 @@ MONTH_RE = (
 
 VESSEL_TYPE_KEYWORDS = [
     "SUPRAMAX", "ULTRAMAX", "PANAMAX", "KAMSARMAX",
-    "HANDYSIZE", "HANDYMAX", "CAPESIZE", "MINI CAPESIZE",
-    "POST-PANAMAX", "POST PANAMAX", "VLOC", "VLCC",
+    "HANDYSIZE", "HANDYMAX", "HMAX", "CAPESIZE", "CAPE", "MINI CAPESIZE",
+    "POST-PANAMAX", "POST PANAMAX", "NEWCASTLEMAX", "VLOC", "VLCC",
     "BULK CARRIER", "SDSTBC", "SDBC",
 ]
 
@@ -121,10 +121,8 @@ def _detect_cargo_type(cargo_name: str, text: str) -> str:
     upper_text = text.upper()
     for category_type, keywords in CARGO_TYPE_KEYWORDS.items():
         for keyword in keywords:
-            if keyword in upper_cargo or keyword in upper_text:
+            if keyword in upper_cargo:
                 return category_type
-    if re.search(r"\bBULK\b", upper_text):
-        return "BULK"
     return ""
 
 
@@ -475,7 +473,7 @@ _DELIVERY_PATTERN = re.compile(
 _REDELIVERY_PATTERN = re.compile(
     r"(?:REDELIVERY?\s*(?:PORT)?|REDEL|RE-?DELIVERY)\s*[:\-]?\s*"
     r"([A-Z][A-Z ,\.\(\)]+?)"
-    r"(?:\s+VIA\b.*)?(?:\n|$|\s{2,}|,(?:\s+[A-Z])?)",
+    r"(?:\n|$|\s{2,}|,(?:\s+[A-Z])?)",
     re.IGNORECASE,
 )
 
@@ -485,8 +483,8 @@ _DURATION_PATTERN = re.compile(
     r"(?:ABOUT\s+|ABT\s+)?"
     r"\d+(?:\s*[-\u2013TO]+\s*\d+)?\s*"
     r"(?:MONTHS?|YEARS?|DAYS?)"
-    r"(?:\s+(?:MINIMUM|WOG))?"
-    r")",
+    r")"
+    r"(?:\s+(?:MINIMUM|WOG))?",
     re.VERBOSE | re.IGNORECASE,
 )
 
@@ -543,11 +541,14 @@ def extract_cargo_tc(text: str) -> List[Dict[str, Any]]:
         record: Dict[str, Any] = {
             "account_name": "",
             "cargo_name": "",
+            "cargo_type": "",
+            "charter_type": "",
             "delivery_port": "",
             "redelivery_port": "",
             "duration": "",
             "laycan": "",
-            "cargo_type": "",
+            "vessel_size": "",
+            "vessel_type": "",
         }
 
         tct_match = _TCT_CARGO_PATTERN.search(block)
@@ -567,16 +568,21 @@ def extract_cargo_tc(text: str) -> List[Dict[str, Any]]:
                 if record["cargo_name"]:
                     break
 
+        if re.search(r"\bTCT\b", block_upper):
+            record["charter_type"] = "TCT"
+        elif re.search(r"\bPERIOD\b", block_upper):
+            record["charter_type"] = "PERIOD"
+
         del_match = _DELIVERY_PATTERN.search(block)
         if del_match:
-            port = del_match.group(1).strip().upper()
-            port = re.sub(r"^TM\s+", "", port)
-            port = re.sub(r"\s*,?\s*(?:E\s+KALI|OF\s+INDONESIA).*$", "", port)
+            port = del_match.group(1).strip()
+            port = re.sub(r"^TM\s+", "", port, flags=re.IGNORECASE)
+            port = re.sub(r"\s*,?\s*(?:E\s+KALI|OF\s+INDONESIA).*$", "", port, flags=re.IGNORECASE)
             record["delivery_port"] = port.strip()
 
         redel_match = _REDELIVERY_PATTERN.search(block)
         if redel_match:
-            port = redel_match.group(1).strip().upper()
+            port = redel_match.group(1).strip()
             record["redelivery_port"] = port.strip()
 
         duration_match = _DURATION_PATTERN.search(block)
@@ -609,10 +615,34 @@ def extract_cargo_tc(text: str) -> List[Dict[str, Any]]:
                 if date_range:
                     record["laycan"] = _normalise_date(date_range.group(1).strip())
 
-        record["account_name"] = _extract_account(block)
-        record["cargo_type"] = _detect_cargo_type(record["cargo_name"], block)
+        dwt_patterns = [
+            r"(\d{2,3}(?:[,\.]\d{3})?(?:\.\d+)?)\s*K?\s*(?:MT\s*)?DWT",
+            r"DWT\s*[:\-]?\s*(\d{2,3}(?:[,\.]\d{3})?(?:\.\d+)?)\s*K?",
+            r"DWT\s*[:\-]?\s*(\d{4,6}(?:\.\d+)?)\s*(?:MT)?",
+            r"(\d{4,6}(?:\.\d+)?)\s*MT\s*(?:DW|DWT)",
+            r"(\d{2,3})K\s*DWT",
+            r"\b(\d{2,3})K\b",
+        ]
+        for pattern in dwt_patterns:
+            dwt_match = re.search(pattern, block_upper)
+            if dwt_match:
+                raw_val = dwt_match.group(1).replace(",", "")
+                if re.search(r"\d+K", dwt_match.group(0)):
+                    record["vessel_size"] = str(int(float(raw_val) * 1000))
+                elif "." in raw_val and float(raw_val) < 300:
+                    record["vessel_size"] = str(int(float(raw_val) * 1000))
+                else:
+                    record["vessel_size"] = raw_val.split(".")[0]
+                break
 
-        if record["delivery_port"] or record["redelivery_port"] or record["cargo_name"]:
+        type_match = _VESSEL_TYPE_PATTERN.search(block)
+        if type_match:
+            record["vessel_type"] = type_match.group(0).upper()
+
+        record["account_name"] = _extract_account(block)
+        record["cargo_type"] = ""  # Do not invent cargo_type for TC
+
+        if record["delivery_port"] or record["redelivery_port"] or record["cargo_name"] or record["charter_type"]:
             records.append(record)
 
     return records if records else [{}]
