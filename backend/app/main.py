@@ -56,8 +56,8 @@ app.add_middleware(
 
 @app.get("/", include_in_schema=False)
 async def root():
-    """Redirects the root URL to the frontend UI."""
-    return RedirectResponse(url="/ui/")
+    """Redirects the root URL to the API documentation."""
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
@@ -108,9 +108,6 @@ async def parse_email(request: ParseEmailRequest) -> ParseEmailResponse:
         ),
     )
 
-_FRONTEND_DIR = Path(__file__).parent.parent.parent / "frontend"
-if _FRONTEND_DIR.is_dir():
-    app.mount("/ui", StaticFiles(directory=str(_FRONTEND_DIR), html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
