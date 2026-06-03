@@ -11,30 +11,30 @@
     ? "http://localhost:8000"
     : "https://mailparser.backend.abhinesh.me";
 
-  const $emailInput     = document.getElementById("emailInput");
-  const $charCount      = document.getElementById("charCount");
-  const $btnParse       = document.getElementById("btnParse");
+  const $emailInput = document.getElementById("emailInput");
+  const $charCount = document.getElementById("charCount");
+  const $btnParse = document.getElementById("btnParse");
   const $btnPasteSample = document.getElementById("btnPasteSample");
-  const $btnClear       = document.getElementById("btnClear");
+  const $btnClear = document.getElementById("btnClear");
 
   const $loadingOverlay = document.getElementById("loadingOverlay");
-  const $loadingText    = document.getElementById("loadingText");
+  const $loadingText = document.getElementById("loadingText");
   const $resultsSection = document.getElementById("resultsSection");
 
-  const $categoryBadge  = document.getElementById("categoryBadge");
-  const $categoryIcon   = document.getElementById("categoryIcon");
-  const $categoryLabel  = document.getElementById("categoryLabel");
+  const $categoryBadge = document.getElementById("categoryBadge");
+  const $categoryIcon = document.getElementById("categoryIcon");
+  const $categoryLabel = document.getElementById("categoryLabel");
   const $confidenceFill = document.getElementById("confidenceFill");
-  const $confidenceVal  = document.getElementById("confidenceValue");
+  const $confidenceVal = document.getElementById("confidenceValue");
 
-  const $metaRecords    = document.getElementById("metaRecordsCount");
-  const $metaTime       = document.getElementById("metaTimeValue");
-  const $recordsBody    = document.getElementById("recordsBody");
-  const $jsonOutput     = document.getElementById("jsonOutput");
+  const $metaRecords = document.getElementById("metaRecordsCount");
+  const $metaTime = document.getElementById("metaTimeValue");
+  const $recordsBody = document.getElementById("recordsBody");
+  const $jsonOutput = document.getElementById("jsonOutput");
   const $btnDownloadJson = document.getElementById("btnDownloadJson");
 
-  const $statusDot      = document.getElementById("statusDot");
-  const $statusText     = document.getElementById("statusText");
+  const $statusDot = document.getElementById("statusDot");
+  const $statusText = document.getElementById("statusText");
 
   const SAMPLES = [
     `good day,
@@ -124,38 +124,43 @@ GRAIN CAP ABT 110330 CBM
   let sampleIndex = 0;
 
   const CATEGORY_META = {
-    tonnage:   { 
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>`, 
-      label: "Tonnage", 
-      cssClass: "category-badge--tonnage" 
+    unclassified: {
+      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+      label: "Unclassified",
+      cssClass: "category-badge--unclassified"
     },
-    cargo_vc:  { 
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`, 
-      label: "Cargo · Voyage Charter",  
-      cssClass: "category-badge--cargo_vc"  
+    tonnage: {
+      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>`,
+      label: "Tonnage",
+      cssClass: "category-badge--tonnage"
     },
-    cargo_tc:  { 
-      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`, 
-      label: "Cargo · Time Charter",    
-      cssClass: "category-badge--cargo_tc"  
+    cargo_vc: {
+      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`,
+      label: "Cargo · Voyage Charter",
+      cssClass: "category-badge--cargo_vc"
+    },
+    cargo_tc: {
+      icon: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+      label: "Cargo · Time Charter",
+      cssClass: "category-badge--cargo_tc"
     },
   };
 
   const FIELD_LABELS = {
-    vessel_name:     "Vessel Name",
-    account_name:    "Account",
-    open_port:       "Open Port",
-    open_date:       "Open Date",
-    vessel_type:     "Vessel Type",
-    vessel_size:     "Vessel Size (DWT)",
-    cargo_name:      "Cargo",
-    loading_port:    "Load Port",
-    discharge_port:  "Discharge Port",
-    delivery_port:   "Delivery Port",
+    vessel_name: "Vessel Name",
+    account_name: "Account",
+    open_port: "Open Port",
+    open_date: "Open Date",
+    vessel_type: "Vessel Type",
+    vessel_size: "Vessel Size (DWT)",
+    cargo_name: "Cargo",
+    loading_port: "Load Port",
+    discharge_port: "Discharge Port",
+    delivery_port: "Delivery Port",
     redelivery_port: "Redelivery Port",
-    laycan:          "Laycan",
-    duration:        "Duration",
-    cargo_type:      "Cargo Type",
+    laycan: "Laycan",
+    duration: "Duration",
+    cargo_type: "Cargo Type",
   };
 
   /**
@@ -272,7 +277,7 @@ GRAIN CAP ABT 110330 CBM
     setLoading(false);
     $resultsSection.hidden = false;
 
-    const meta = CATEGORY_META[data.category] || CATEGORY_META.tonnage;
+    const meta = CATEGORY_META[data.category] || CATEGORY_META.unclassified;
     $categoryBadge.className = `category-badge ${meta.cssClass}`;
     $categoryIcon.innerHTML = meta.icon;
     $categoryLabel.textContent = meta.label;
@@ -382,7 +387,7 @@ GRAIN CAP ABT 110330 CBM
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "mailparser-result.json";
+    a.download = "result.json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

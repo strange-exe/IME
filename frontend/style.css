@@ -12,6 +12,7 @@
   --grad-tonnage:   linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   --grad-cargo-vc:  linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%);
   --grad-cargo-tc:  linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  --grad-unclassified: linear-gradient(135deg, #94a3b8 0%, #cbd5e1 100%);
   --grad-success:   linear-gradient(135deg, #10b981 0%, #34d399 100%);
 
   --clr-indigo:     #6366f1;
@@ -455,6 +456,11 @@ body {
 
 .category-badge--cargo_tc {
   background: var(--grad-cargo-tc);
+}
+
+.category-badge--unclassified {
+  background: var(--grad-unclassified);
+  color: #1e293b;
 }
 
 .category-badge__icon {

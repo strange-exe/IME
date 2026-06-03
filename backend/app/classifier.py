@@ -187,4 +187,7 @@ def classify(text: str, pipeline: Pipeline) -> Tuple[str, float]:
     if rule_scores[best_category] > 0.0 and rule_scores[best_category] >= 2.0 * max_alternative_score:
         confidence = min(1.0, confidence + 0.10)
 
+    if confidence < 0.5:
+        return "unclassified", round(float(confidence), 4)
+
     return best_category, round(float(confidence), 4)
