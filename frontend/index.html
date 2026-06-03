@@ -9,14 +9,15 @@
     content="AI-powered shipping email classification and structured data extraction. Parse tonnage, voyage charter, and time charter emails instantly." />
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
   <link rel="apple-touch-icon" href="logo.svg" />
-  
+
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="MailParser - Email Intelligence" />
-  <meta property="og:description" content="AI-powered shipping email classification and structured data extraction. Parse tonnage, voyage charter, and time charter emails instantly." />
+  <meta property="og:description"
+    content="AI-powered shipping email classification and structured data extraction. Parse tonnage, voyage charter, and time charter emails instantly." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mailparser.abhinesh.me/" />
   <meta property="og:image" content="https://mailparser.abhinesh.me/logo.svg" />
-  
+
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="MailParser - Email Intelligence" />
@@ -56,8 +57,8 @@
         Shipping Email <span class="gradient-text">Intelligence</span>
       </h1>
       <p class="hero__subtitle">
-        Paste a shipping broker email below. Our hybrid AI engine classifies it and extracts every record — vessels,
-        cargoes, ports, dates — in milliseconds.
+        Paste a shipping broker email below. Our hybrid AI engine classifies it and extracts every record - vessels,
+        cargoes, ports, dates - in milliseconds.
       </p>
     </section>
 
@@ -164,7 +165,17 @@
           </svg>
           Raw JSON Response
         </summary>
-        <pre class="json-card__pre"><code id="jsonOutput"></code></pre>
+        <div class="json-card__content-wrapper">
+          <button class="btn btn--ghost btn--sm json-card__download" id="btnDownloadJson" type="button" title="Download JSON">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download
+          </button>
+          <pre class="json-card__pre"><code id="jsonOutput"></code></pre>
+        </div>
       </details>
     </section>
   </main>

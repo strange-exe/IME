@@ -31,6 +31,7 @@
   const $metaTime       = document.getElementById("metaTimeValue");
   const $recordsBody    = document.getElementById("recordsBody");
   const $jsonOutput     = document.getElementById("jsonOutput");
+  const $btnDownloadJson = document.getElementById("btnDownloadJson");
 
   const $statusDot      = document.getElementById("statusDot");
   const $statusText     = document.getElementById("statusText");
@@ -371,6 +372,21 @@ GRAIN CAP ABT 110330 CBM
     $charCount.textContent = "0 characters";
     $resultsSection.hidden = true;
     $emailInput.focus();
+  });
+
+  $btnDownloadJson?.addEventListener("click", () => {
+    const jsonText = $jsonOutput.textContent;
+    if (!jsonText) return;
+
+    const blob = new Blob([jsonText], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mailparser-result.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   });
 
   warmBackend();

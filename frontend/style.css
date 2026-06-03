@@ -621,6 +621,22 @@ body {
   color: var(--clr-text);
 }
 
+.json-card__content-wrapper {
+  position: relative;
+}
+
+.json-card__download {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.json-card__download:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .json-card__pre {
   padding: var(--space-lg);
   margin: 0;
