@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MailParser - Email Intelligence</title>
+  <meta name="description"
+    content="AI-powered shipping email classification and structured data extraction. Parse tonnage, voyage charter, and time charter emails instantly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--1" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--2" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--3" aria-hidden="true"></div>
+
+  <header class="header" id="header">
+    <div class="header__logo">
+      <svg class="header__icon" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+        <path d="M8 22L16 10L24 22H8Z" fill="white" fill-opacity="0.9" />
+        <defs>
+          <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+            <stop stop-color="#6366f1" />
+            <stop offset="1" stop-color="#06b6d4" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="header__title">MailParser
+    </div>
+    <div class="header__status" id="headerStatus">
+      <span class="status-dot status-dot--connecting" id="statusDot"></span>
+      <span class="status-text" id="statusText">Connecting…</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero" id="hero">
+      <h1 class="hero__title">
+        Shipping Email <span class="gradient-text">Intelligence</span>
+      </h1>
+      <p class="hero__subtitle">
+        Paste a shipping broker email below. Our hybrid AI engine classifies it and extracts every record — vessels,
+        cargoes, ports, dates — in milliseconds.
+      </p>
+    </section>
+
+    <section class="input-section" id="inputSection">
+      <div class="glass-card input-card">
+        <div class="input-card__header">
+          <div class="input-card__label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="M22 7L13.03 12.7a1.94 1.94 0 01-2.06 0L2 7" />
+            </svg>
+            Email Body
+          </div>
+          <div class="input-card__actions">
+            <button class="btn btn--ghost btn--sm" id="btnPasteSample" type="button" title="Load sample email">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+              </svg>
+              Load Sample
+            </button>
+            <button class="btn btn--ghost btn--sm" id="btnClear" type="button" title="Clear input">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+              Clear
+            </button>
+          </div>
+        </div>
+        <textarea id="emailInput" class="input-card__textarea"
+          placeholder="Paste your shipping broker email here…&#10;&#10;Example:&#10;MV SEA BRIGHT&#10;OPEN SINGAPORE 15 JUN&#10;58K DWT SUPRAMAX&#10;PLS REVERT WITH SUITABLE CARGO"
+          rows="10" spellcheck="false"></textarea>
+        <div class="input-card__footer">
+          <span class="input-card__count" id="charCount">0 characters</span>
+          <button class="btn btn--primary" id="btnParse" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Parse Email
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="loading-overlay" id="loadingOverlay" hidden>
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring spinner-ring--2"></div>
+      </div>
+      <p class="loading-text" id="loadingText">Classifying email…</p>
+    </div>
+
+    <section class="results-section" id="resultsSection" hidden>
+      <div class="result-header" id="resultHeader">
+        <div class="category-badge" id="categoryBadge">
+          <span class="category-badge__icon" id="categoryIcon"></span>
+          <span class="category-badge__label" id="categoryLabel"></span>
+        </div>
+        <div class="confidence-meter" id="confidenceMeter">
+          <span class="confidence-meter__label">Confidence</span>
+          <div class="confidence-meter__bar">
+            <div class="confidence-meter__fill" id="confidenceFill"></div>
+          </div>
+          <span class="confidence-meter__value" id="confidenceValue">0%</span>
+        </div>
+        <div class="meta-chips">
+          <span class="meta-chip" id="metaRecords">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+            </svg>
+            <span id="metaRecordsCount">0</span> records
+          </span>
+          <span class="meta-chip" id="metaTime">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12,6 12,12 16,14" />
+            </svg>
+            <span id="metaTimeValue">0</span>ms
+          </span>
+        </div>
+      </div>
+
+      <div class="glass-card records-card" id="recordsCard">
+        <div class="records-card__header">
+          <h2 class="records-card__title">Extracted Records</h2>
+        </div>
+        <div class="records-card__body" id="recordsBody">
+        </div>
+      </div>
+
+      <details class="glass-card json-card" id="jsonCard">
+        <summary class="json-card__summary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+          Raw JSON Response
+        </summary>
+        <pre class="json-card__pre"><code id="jsonOutput"></code></pre>
+      </details>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>MailParser</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

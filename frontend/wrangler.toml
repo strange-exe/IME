@@ -1,0 +1,7 @@
+name = "mailparser-frontend"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mailparser-db"
+database_id = "873350b3-46b5-4360-b1d5-ec8368f724c0"
