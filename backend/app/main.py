@@ -4,10 +4,13 @@ This module sets up the FastAPI application, defines the REST API endpoints, and
 """
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 import logging
 import time
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException
